@@ -1,3 +1,5 @@
+import logging
+
 import requests
 
 
@@ -8,22 +10,23 @@ class BaseClient(object):
     """
     def __init__(self, base_url: str):
         self.base_url = base_url
-        self.session = requests.Session
+        self.session = requests.Session()
 
     def _request(self, method, endpoint, **kwargs):
         """
         Внутренний (приватный) метод для выполнения запроса.
         Он склеивает базовый URL и конкретный эндпоинт.
         """
-        if not endpoint.startwith("/"):
+        if not endpoint.startswith("/"):
             endpoint = "/" + endpoint
 
         url = f"{self.base_url}{endpoint}"
 
-        print(f"Request: {method} {url}")
+        logging.getLogger(__name__).debug(
+            f"-- Request: {method} {url} --"
+        )
 
         response = self.session.request(method=method, url=url, **kwargs)
-
         return response
 
     def get(self, endpoint, **kwargs):
