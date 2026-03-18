@@ -5,6 +5,7 @@ import pytest
 from faker import Faker
 
 from dto.response.create_post_response import CreatePostResponseDto
+from dto.response.single_post_response import SinglePostResponseDto
 
 
 @allure.epic("API Тестирование")
@@ -52,10 +53,10 @@ def test_get_all_posts(posts_client):
 @pytest.mark.api
 def test_create_post(posts_client):
     """
-    Кейс 1 (Легкий): Создание поста
+    Кейс 2 (Легкий): Создание поста
     1. Отправить POST запрос на /posts с тестовыми данными.
-    3. Проверить, что статус код вернулся 201.
-    4. Проверить, что данные сохранены корректно.
+    2. Проверить, что статус код вернулся 201.
+    3. Проверить, что данные сохранены корректно.
     """
 
     faker_obj = Faker()
@@ -83,5 +84,43 @@ def test_create_post(posts_client):
         allure.attach(
             pretty_json,
             name="Ответ при создании поста",
+            attachment_type=allure.attachment_type.JSON
+        )
+
+@allure.epic("API Тестирование")
+@allure.feature("Ресурс Posts")
+@allure.story("Получение поста по id")
+@allure.title("Успешное получение поста")
+@allure.tag("smoke", "api", "regress")
+@pytest.mark.api
+def test_get_post_by_id(posts_client):
+    """
+    Кейс 3 (Легкий): Получение поста по переданному id
+    1. Отправить GET запрос на /posts/{id}.
+    2. Проверить, что статус код вернулся 200.
+    3. Проверить, что в полученных полях не пустые значения.
+    """
+    faker = Faker()
+    query_parameter_id = faker.random_int(min=1, max=100)
+
+    with allure.step(f"Отправка GET запроса на /posts/{query_parameter_id}"):
+        response = posts_client.get_post_by_id(query_parameter_id)
+        response_json = response.json()
+        get_data = SinglePostResponseDto(**response_json)
+
+    with allure.step("Проверка статус кода"):
+        assert response.status_code == 200, f"Ожидался статус код = 200, но пришел '{response.status_code}'"
+
+    with allure.step("Проверка полученных полей"):
+        assert get_data.id == query_parameter_id, f"Ожидался id-поста = '{query_parameter_id}', но вернулся = '{get_data.id}'"
+        assert get_data.title != "", f"Ожидалось, что title будет не пустым, но title вернулось пустое"
+        assert get_data.body != "", f"Ожидалось, что body будет не пустым, но body вернулось пустое"
+        assert  get_data.user_id is not None, f"Ожидалось, что userId будет не пустым, но userId вернулось пустое"
+
+    with allure.step("Прикрипление отчета"):
+        pretty_json = json.dumps(response_json, indent=4, ensure_ascii=False)
+        allure.attach(
+            pretty_json,
+            name="Полученный пост",
             attachment_type=allure.attachment_type.JSON
         )
