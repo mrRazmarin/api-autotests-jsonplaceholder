@@ -38,4 +38,4 @@ class PostClient(BaseClient):
             "body": body,
             "userId": user_id
         }
-        return self.post(endpoint="/post", json=payload)
+        return self.post(endpoint="/posts", json=payload)
