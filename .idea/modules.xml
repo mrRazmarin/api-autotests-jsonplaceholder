@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/api-autotests-jsonplaceholder.iml" filepath="$PROJECT_DIR$/.idea/api-autotests-jsonplaceholder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/api-autotests-petstore.iml" filepath="$PROJECT_DIR$/.idea/api-autotests-petstore.iml" />
     </modules>
   </component>
 </project>
