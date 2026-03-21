@@ -1,0 +1,9 @@
+# .gitignore
+__pycache__/
+*.py[cod]
+*$py.class
+allure_results/
+.pytest_cache/
+.venv/
+venv/
+.env

@@ -31,8 +31,16 @@ jobs:
         # На всякий случай ставим allure-cli, чтобы генерировать отчет прямо в CI
         pip install allure-pytest 
 
+    - name: Start Petstore API
+      run: docker-compose up -d
+
+    - name: Wait for API
+      run: sleep 15 # Пауза, пока поднимается java
+
     # Шаг 4: Запуск тестов
     - name: Run Tests with Allure
+      env:
+        PETSTORE_URL: http://localhost:8080/v2
       run: |
         # Запускаем pytest. Результаты складываем в папку allure_results
         pytest --alluredir=allure_results
@@ -46,3 +54,7 @@ jobs:
         name: allure-results # Имя архива для скачивания
         path: allure_results # Папка с данными
         retention-days: 30 # Хранить 30 дней
+
+    - name: Stop Petstore
+      if: always()
+      run: docker-compose down
